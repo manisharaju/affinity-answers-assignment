@@ -16,3 +16,9 @@ SQL query included in `question2/q2ans.sql`.
 Note:
 
 The SQL query for Question 2(c) follows the assignment requirements. While testing against the public Rfam MySQL server, the query exceeded the server's execution time limit and the connection was closed (Error Code: 2013). The query itself is provided as required and is suitable for execution in an environment without the public server timeout.
+
+## Question 3
+
+Shell script is available in `question3/q3.sh`.
+
+Explanation is available in `question3/explanation.md`.

@@ -1,5 +1,5 @@
 -- Question 2(a)
--- Count the number of Acacia plant species
+-- How many types of Acacia plants can be found in the taxonomy table?
 
 SELECT COUNT(DISTINCT species) AS acacia_species_count
 FROM taxonomy
@@ -7,7 +7,7 @@ WHERE species LIKE 'Acacia%';
 
 
 -- Question 2(b)
--- Wheat species with the longest DNA sequence
+-- Which type of wheat has the longest DNA sequence?
 
 SELECT
     t.species,
@@ -23,7 +23,7 @@ LIMIT 1;
 
 
 -- Question 2(c)
--- 9th page (15 results per page)
+-- 9th page with 15 results per page
 
 SELECT
     f.rfam_acc AS family_accession_id,
