@@ -1,21 +1,23 @@
 import requests
 from bs4 import BeautifulSoup
-import json
+from urllib.parse import quote_plus
+
 
 def get_search_term():
     # Accepts a search term from the user.
-    return input("Enter product to search: ").strip()
+    return input("Enter search term: ").strip()
+
 
 def build_search_url(search_term):
     # Creates the search URL for MDComputers.
     base_url = "https://mdcomputers.in/"
-    return f"{base_url}?route=product/search&search={search_term}"
+    encoded_term = quote_plus(search_term)
+
+    return f"{base_url}?route=product/search&search={encoded_term}"
+
 
 def fetch_page(url):
-    """
-    Fetches the search results page from MDComputers.
-    """
-
+    # Fetches the search results page.
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -33,11 +35,9 @@ def fetch_page(url):
         print(f"Error fetching webpage: {e}")
         return None
 
-def extract_products(html):
-    """
-    Extracts product information from the HTML.
-    """
 
+def extract_products(html):
+    # Extracts product information from the HTML.
     soup = BeautifulSoup(html, "html.parser")
     products = []
 
@@ -45,39 +45,38 @@ def extract_products(html):
 
     for product in product_cards:
 
-        title_tag = product.find("h3", class_="product-entities-title")
-        price_tag = product.find("span", class_="price")
+        title_tag = product.find("h3",class_="product-entities-title")
+
+        price_tag = product.find("span",class_="price")
 
         if title_tag and title_tag.a:
 
-            product_name = title_tag.a.text.strip()
+            product_name = title_tag.a.get_text(strip=True)
 
-            product_link = title_tag.a["href"]
+            if price_tag:
+                prices = price_tag.get_text(" ",strip=True).split()
 
-            price = (
-                price_tag.get_text(" ", strip=True)
-                if price_tag
-                else "Not Available"
-            )
+                if len(prices) >= 2:
+                    price = prices[-1]
+                else:
+                    price = prices[0]
+            else:
+                price = "Not Available"
 
-            products.append(
-                {
-                    "Product Name": product_name,
-                    "Price": price,
-                    "Product Link": product_link,
-                }
-            )
+            products.append({ "Product Name": product_name,"Selling Price": price})
 
     return products
-def save_to_json(products):
-    """
-    Saves products to a JSON file.
-    """
 
-    with open("question1/products.json", "w", encoding="utf-8") as file:
-        json.dump(products, file, indent=4, ensure_ascii=False)
+def display_products(products):
+    # Displays the extracted products in a readable format.
+    print("\nProducts Found:\n")
 
-    print(f"\nSaved {len(products)} products to products.json")
+    for index, product in enumerate(products, start=1):
+        print(f"{index}. {product['Product Name']}")
+        print(f"   Selling Price: {product['Selling Price']}")
+        print()
+
+
 def main():
 
     search_term = get_search_term()
@@ -91,14 +90,7 @@ def main():
         products = extract_products(html)
 
         if products:
-
-            save_to_json(products)
-
-            print("\nProducts Found:\n")
-
-            for product in products:
-                print(product)
-
+            display_products(products)
         else:
             print("No products found.")
 
